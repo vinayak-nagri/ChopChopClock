@@ -1,0 +1,25 @@
+<x-layout>
+    <x-page-heading class="text-center"> Log In </x-page-heading>
+    <form action="/login" method="POST" class="max-w-2xl mx-auto space-y-6">
+        @csrf
+        <div class="flex flex-col space-y-1">
+            <label for="email" class="font-bold text-shadow-md">Email</label>
+            <input type="email" id="email" name="email" placeholder="" value="{{ old('email') }}"
+                   class="block w-full h-10 rounded-xl bg-white/10 border border-white/10 px-5 py-4 my-2">
+            @error('email')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+
+            <label for="password" class="font-bold text-shadow-md">Password</label>
+            <input type="password" id="password" name="password" placeholder=""
+                   class="block w-full h-10 rounded-xl bg-white/10 border border-white/10 px-5 py-4 my-2">
+            @error('password')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+
+            <button type="submit" class="self-center px-4 py-2 border w-fit rounded-2xl mt-2 font-semibold bg-emerald-600
+                     hover:opacity-90 cursor-pointer">
+                Log In</button>
+        </div>
+    </form>
+</x-layout>
