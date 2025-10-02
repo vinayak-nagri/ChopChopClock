@@ -21,7 +21,7 @@
 
         @auth()
         <div class="space-x-6">
-            <a href="#">Dashboard</a>
+            <a href="/dashboard">Dashboard</a>
             <a href="#">History</a>
             <a href="#">Settings</a>
         </div>

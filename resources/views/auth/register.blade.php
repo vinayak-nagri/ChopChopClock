@@ -1,5 +1,6 @@
 <x-layout>
 <x-page-heading class="text-center"> Sign Up </x-page-heading>
+
     <form action="/register" method="POST" class="max-w-2xl mx-auto space-y-6">
         @csrf
         <div class="flex flex-col space-y-1">

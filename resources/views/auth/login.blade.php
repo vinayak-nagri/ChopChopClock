@@ -1,5 +1,6 @@
 <x-layout>
     <x-page-heading class="text-center"> Log In </x-page-heading>
+
     <form action="/login" method="POST" class="max-w-2xl mx-auto space-y-6">
         @csrf
         <div class="flex flex-col space-y-1">
