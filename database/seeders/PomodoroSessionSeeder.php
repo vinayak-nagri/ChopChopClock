@@ -15,7 +15,7 @@ class PomodoroSessionSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
+        $user = User::inRandomOrder()->first()->id();
 
         if ($user) {
             PomodoroSession::create([

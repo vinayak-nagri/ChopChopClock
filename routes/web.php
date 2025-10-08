@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PomodoroSessionController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
@@ -26,3 +27,5 @@ Route::post('/login',[SessionController::class, 'store']);
 Route::delete('/logout',[SessionController::class, 'destroy'])->middleware('auth');
 
 Route::get('/dashboard',[DashboardController::class,'index']) -> middleware ('auth');
+
+Route::post('/sessions', [PomodoroSessionController::class, 'store']);
