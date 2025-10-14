@@ -10,4 +10,16 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    server: {
+        host: 'localhost',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            protocol: 'ws',
+            host: 'localhost',
+            clientPort: 5173,
+        },
+        // Optionally uncomment if you need absolute dev asset URLs aligned to your app domain:
+        // origin: 'http://pomodoro-timer.test',
+    },
 });

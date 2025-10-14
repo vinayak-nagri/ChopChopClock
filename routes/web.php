@@ -26,6 +26,12 @@ Route::post('/login',[SessionController::class, 'store']);
 //log out action
 Route::delete('/logout',[SessionController::class, 'destroy'])->middleware('auth');
 
-Route::get('/dashboard',[DashboardController::class,'index']) -> middleware ('auth');
+Route::get('/dashboard',[DashboardController::class,'index']) -> middleware ('auth')->name('dashboard');
 
-Route::post('/sessions', [PomodoroSessionController::class, 'store']);
+//Pomodoro Session Handling
+Route::post('/sessions/start', [PomodoroSessionController::class, 'start'])->name('sessions.start');
+Route::patch('/sessions/{session}/pause', [PomodoroSessionController::class, 'pause'])->name('sessions.pause');
+Route::patch('/sessions/{session}/resume',[PomodoroSessionController::class, 'resume'])->name('sessions.resume');
+Route::patch('/sessions/{session}/cancel',[PomodoroSessionController::class, 'cancel'])->name('sessions.cancel');
+Route::patch('/sessions/{session}/finish',[PomodoroSessionController::class, 'finish'])->name('sessions.finish');
+Route::delete('/sessions/{session}/destroy', [PomodoroSessionController::class, 'destroy'])->name('sessions.destroy');
