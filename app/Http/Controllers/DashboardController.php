@@ -19,6 +19,11 @@ class DashboardController extends Controller
 
         $defaultSettings = UserSetting::where('user_id', $user_id)->firstOrFail();
 
-        return view('dashboard', compact('recentRecords','defaultSettings'));
+        $activeSession = PomodoroSession::where('user_id', $user_id)
+                         ->whereIn('status',['running','paused'])
+                         ->latest()
+                         ->first();
+
+        return view('dashboard', compact('recentRecords','defaultSettings', 'activeSession'));
     }
 }
