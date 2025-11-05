@@ -32,7 +32,6 @@
                 <input type="hidden" name="type" id="type" value="{{$activeSession->type ?? 'work'}}"/>
                 <input type="hidden" name="duration_minutes" id="duration_minutes" value="{{$activeSession->duration_minutes ?? '25'}}">
 
-                <input type="hidden" name="action" id="action" value="start">
                 <div class="flex flex-row justify-between mt-auto">
                     <button class="mx-auto cursor-pointer" id="startPauseBtn" type="button"> Start </button>
                     <button class="self-end cursor-pointer" id="resetBtn" type="button"> Reset </button>
@@ -65,22 +64,15 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('[data-type]');
-            const hiddenInput = document.getElementById('type');
-            const defaultType = hiddenInput.value;
+            // const hiddenInput = document.getElementById('type');
+            // const defaultType = hiddenInput.value;
+            const defaultType = document.getElementById('type').value;
             const defaultBtn = document.querySelector(`[data-type="${defaultType}"]`);
             if(defaultBtn) defaultBtn.classList.add('bg-white','text-black');
-            const timerForm = document.getElementById('timerForm');
-
-            let durationMinutes = document.getElementById('duration_minutes');
-            let activeBtnDuration = defaultBtn ? parseInt(defaultBtn.dataset.durationMinutes,10): 25;
-
-
-            const sessionId = document.getElementById('session_id')?.value || null;
-            const sessionStatus = document.getElementById('session_status')?.value || null;
-            const flashedElapsed = document.getElementById('elapsed_seconds')?.value || ''; // seconds (string) or ''
-
 
             const startPauseBtn = document.getElementById('startPauseBtn');
+            const timerForm = document.getElementById('timerForm');
+            let activeBtnDuration = defaultBtn ? parseInt(defaultBtn.dataset.durationMinutes,10): 25;
 
             let lastTick = null;
 
@@ -93,6 +85,64 @@
                 isFinishing:false,
             };
 
+            function getSessionId() {
+                const sessionId = document.getElementById('session_id');
+                return sessionId?.value || '';
+            }
+
+            function setSessionData({session_id,
+                                    session_status,
+                                    elapsed_seconds,
+                                    type,
+                                    duration_minutes} = {}) {
+                if(typeof session_id !== 'undefined') {
+                    document.getElementById('session_id').value = session_id ?? ''
+                }
+
+                if(typeof session_status !== 'undefined') {
+                    document.getElementById('session_status').value = session_status ?? ''
+                }
+
+                if(typeof elapsed_seconds !== 'undefined') {
+                    document.getElementById('elapsed_seconds').value = elapsed_seconds ?? ''
+                }
+
+                if(typeof type !== 'undefined') {
+                    document.getElementById('type').value = type ?? ''
+                }
+
+                if(typeof duration_minutes !== 'undefined') {
+                    document.getElementById('duration_minutes').value = duration_minutes ?? ''
+                }
+            }
+
+            async function fetchJson(url, options = {}) {
+                const response = await fetch(url, options);
+                let errBody = null;
+                if(!response.ok) {
+                    try {
+                            errBody = await response.json();
+                    } catch(e) {}
+
+                    const msg = (errBody && errBody.message) ?
+                                errBody.message : `HTTP ${response.status}`;
+
+                    const err = new Error(msg);
+                    err.status  = response.status;
+                    err.body = errBody;
+                    throw err;
+                }
+
+                const ct = response.headers.get('content-type') || '';
+                if(! ct.includes('application/json')) {
+                    const err = new Error('Unexpected server response (Expected JSON)');
+                    err.status = response.status;
+                    throw err;
+                }
+
+                return response.json();
+            }
+
             async function sendStart()
             {
                 //disable start button to prevent accidental double click submissions
@@ -104,10 +154,9 @@
                 //read csrf
                 const csrf = document.querySelector("meta[name='csrf-token']").content;
 
-
                 try {
                     //send fetch() to /sessions/start
-                    const response = await fetch('/sessions/start', {
+                    const data = await fetchJson('/sessions/start', {
                         method: 'POST',
                         headers: {
                             'Accept': 'application/json',
@@ -116,24 +165,6 @@
                         body: formData
                     });
 
-                    //if error in response, throw error message
-                    if(!response.ok) {
-                        startPauseBtn.disabled = false;
-                        throw new Error(
-                            `Unexpected response status ${response.status} or content type`
-                        );
-                    }
-
-                    //ensure we have JSON in response
-                    const ct = response.headers.get('content-type') || '';
-                    if(!ct.includes('application/json')) {
-                        alert('Unexpected server response. Please try again.');
-                        return;
-                    }
-
-                    //receive json data from server
-                    const data = await response.json();
-
                     //validate expected keys minimally
                     if(!data || typeof(data.session_id) === 'undefined') {
                         alert('Invalid server response. Please try again.');
@@ -141,11 +172,13 @@
                     }
 
                     //update hidden inputs
-                    document.getElementById('session_id').value = data.session_id;
-                    document.getElementById('type').value = data.type;
-                    document.getElementById('duration_minutes').value = data.duration_minutes;
-                    document.getElementById('elapsed_seconds').value = data.elapsed_seconds;
-                    document.getElementById('session_status').value = data.session_status;
+                    setSessionData({
+                        session_id: data.session_id,
+                        session_status: data.session_status,
+                        elapsed_seconds: data.elapsed_seconds,
+                        type: data.type,
+                        duration_minutes: data.duration_minutes
+                    })
 
                     //initialize state and start
                     activeBtnDuration = parseInt(data.duration_minutes,10) || activeBtnDuration;
@@ -157,7 +190,7 @@
                 } catch(err) {
                     //Network or unexpected error: Inform user and allow retry
                     console.error('sendStart() network/error:', err);
-                    alert('Network error — could not start session. Check your connection and try again.');
+                    alert(err.message || 'Network error — could not start session. Check your connection and try again.');
                 } finally{
                     startPauseBtn.disabled = false;
                 }
@@ -172,7 +205,7 @@
 
                 try {
                     //send a patch request to the pause route
-                    const response = await fetch(`/sessions/${sessionId}/pause`, {
+                    const data = await fetchJson(`/sessions/${sessionId}/pause`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
@@ -183,25 +216,6 @@
                         body: JSON.stringify({elapsed_ms: elapsedMs}),
                     });
 
-                    // check if response is not ok
-                    if(!response.ok)
-                    {
-                        startPauseBtn.disabled = false;
-                        const err = await response.json().catch(()=>({}));
-                        alert(err.message || `Pause Failed due to ${response.status} Error`);
-                        return;
-                    }
-
-                    //ensure we have JSON in response
-                    const ct = response.headers.get('content-type') || '';
-                    if(!ct.includes('application/json')) {
-                        alert('Unexpected server response. Please try again.');
-                        return;
-                    }
-
-                    //parse JSON response from the server and update hidden fields
-                    const data = await response.json();
-
                     //validate expected keys minimally
                     if(!data || typeof(data.session_id) === 'undefined') {
                         alert('Invalid server response. Please try again.');
@@ -209,16 +223,18 @@
                     }
 
                     //update hidden fields
-                    document.getElementById('elapsed_seconds').value = (typeof data.elapsed_seconds !== 'undefined'
-                    ? data.elapsed_seconds
-                    : elapsedMs/1000);
-                    document.getElementById('session_status').value = data.session_status;
+                    setSessionData(
+                        {
+                            elapsed_seconds: data.elapsed_seconds,
+                            session_status: data.session_status
+                        }
+                    )
 
                     //Pause the timer on the UI
                     pauseTimer();
                 } catch(err) {
                     console.error('Network Error: ', err);
-                    alert('Network error while pausing. Please try again.');
+                    alert(err.message || 'Network error while pausing. Please try again.');
                 } finally {
                     startPauseBtn.disabled = false;
                 }
@@ -229,7 +245,7 @@
                 const csrf = document.querySelector(`meta[name="csrf-token"]`).content;
 
                 try {
-                    const response = await fetch(`/sessions/${sessionId}/resume`, {
+                    const data = await fetchJson(`/sessions/${sessionId}/resume`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
@@ -240,37 +256,22 @@
                         body: JSON.stringify({elapsed_ms: elapsedMs})
                     })
 
-                    if(!response.ok) {
-                        startPauseBtn.disabled = false;
-                        const err = await response.json().catch(()=>({}));
-                        alert(err.message || `Resume Failed due to ${response.status} Error`);
-                        return;
-                    }
-
-                    //ensure we have JSON in response
-                    const ct = response.headers.get('content-type') || '';
-                    if(!ct.includes('application/json')) {
-                        alert('Unexpected server response. Please try again.');
-                        return;
-                    }
-
-                    const data = await response.json();
-
                     //validate expected keys minimally
                     if(!data || typeof(data.session_id) === 'undefined') {
                         alert('Invalid server response. Please try again.');
                         return;
                     }
 
-
                     const serverSessionMs = Number(data.duration_minutes) * 60 * 1000;
                     const serverElapsedSeconds = Number(data.elapsed_seconds || 0);
                     const serverRemainingMs = serverSessionMs - (serverElapsedSeconds * 1000);
 
-                    document.getElementById('session_status').value = data.session_status;
-                    document.getElementById('elapsed_seconds').value = (typeof data.elapsed_seconds !== 'undefined')
-                        ? data.elapsed_seconds
-                        : elapsedMs/1000;
+                    setSessionData(
+                        {
+                            elapsed_seconds: data.elapsed_seconds,
+                            session_status: data.session_status
+                        }
+                    )
 
                     state.sessionMs = serverSessionMs;
                     state.remainingMs = (typeof serverRemainingMs === 'number')
@@ -280,7 +281,7 @@
                     startTimer();
                 } catch(err) {
                     console.error('sendResume() Network error: ', err);
-                    alert('Network error while resuming. Please try again.');
+                    alert(err.message||'Network error while resuming. Please try again.');
                 } finally {
                     startPauseBtn.disabled = false;
                 }
@@ -291,7 +292,7 @@
                 const csrf = document.querySelector(`meta[name="csrf-token"]`).content;
 
                 try {
-                    const response = await fetch(`/sessions/${sessionId}/cancel`, {
+                    const data = await fetchJson(`/sessions/${sessionId}/cancel`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
@@ -302,45 +303,24 @@
                         credentials: 'same-origin'
                     });
 
-                    if(!response.ok) {
-                        resetBtn.disabled = false;
-                        const err = await response.json().catch(() => ({}));
-                        alert(err.message || `Reset Failed: ${response.status} error`);
-                        return;
-                    }
-
-                    const ct = response.headers.get('content-type') || '';
-                    if(!ct.includes('application/json')) {
-                        alert('Wrong response!');
-                        return;
-                    }
-
-                    const data = await response.json();
-
                     if(!data) {
                         alert('No data received!');
                         return;
                     }
 
-                    if(data.session_status === 'cancelled')
-                    {
-                        document.getElementById('session_id').value = '';
-                        document.getElementById('elapsed_seconds').value = '';
-                            document.getElementById('duration_minutes').value = '';
-                    } else {
-                        document.getElementById('session_id').value = data.session_id;
-                        document.getElementById('elapsed_seconds').value = (typeof data.elapsed_seconds !== 'undefined')
-                            ? data.elapsed_seconds
-                            : elapsedMs/1000;
-                        document.getElementById('duration_minutes').value = data.duration_minutes;
-                    }
-                    document.getElementById('session_status').value = data.session_status;
-                    document.getElementById('type').value = data.type;
+                    setSessionData({
+                        session_id: '',
+                        elapsed_seconds: '',
+                        duration_minutes: '',
+                        session_status: data.session_status,
+                        type: data.type
+                    })
+
                     resetLocalTimer(data.duration_minutes);
                 } catch(err)
                 {
                     console.error('sendReset() Network error: ', err);
-                    alert('Network error while resetting. Please try again.');
+                    alert(err.message||'Network error while resetting. Please try again.');
                 } finally {
                     resetBtn.disabled = false;
                 }
@@ -355,7 +335,7 @@
                 const csrf = document.querySelector(`meta[name="csrf-token"]`).content;
 
                 try {
-                    const response = await fetch(`/sessions/${sessionId}/finish`, {
+                    const data = await fetchJson(`/sessions/${sessionId}/finish`, {
                         method: 'PATCH',
                         headers: {
                             'Accept': 'application/json',
@@ -364,73 +344,29 @@
                         credentials: 'same-origin'
                     });
 
-                    if(!response.ok) {
-                        const err = await response.json().catch(() => ({}));
-                        alert(err.message || `Finish Failed: ${response.status} error`);
-
-                        return;
-                    }
-
-                    const data = await response.json();
-
                     if(!data || typeof (data.session_id) === 'undefined') {
                         alert('Invalid server response. Please try again.');
                         return;
                     }
 
-                    if(data.session_status === 'completed')
-                    {
-                        document.getElementById('session_id').value = '';
-                        document.getElementById('elapsed_seconds').value = '';
-                        document.getElementById('duration_minutes').value = '';
+                    resetLocalTimer(data.duration_minutes);
 
-                    } else {
-                        document.getElementById('session_id').value = data.session_id;
-                        document.getElementById('elapsed_seconds').value = data.elapsed_seconds;
-                        document.getElementById('duration_minutes').value = data.duration_minutes;
-
-                        document.getElementById('session_status').value = data.session_status;
-                        document.getElementById('type').value = data.type;
-
-
-                    }
+                    setSessionData({
+                        session_id: '',
+                        elapsed_seconds: '',
+                        duration_minutes: '',
+                        session_status: data.session_status,
+                        type: data.type
+                    })
                 } catch(err)
                 {
                     console.error('sendFinish() Network error: ', err);
-                    alert('Network error while finishing. Please try again.');
+                    alert(err.message||'Network error while finishing. Please try again.');
                     // allow retry on failure:
+                }finally {
                     state.isFinishing = false;
                 }
-
             }
-
-            // if(flashedElapsed !== '')
-            // {
-            //     const elapsedSec = parseInt(flashedElapsed, 10) || 0;
-            //     state.remainingMs = Math.max(0, state.sessionMs - (elapsedSec * 1000)); //compute remaining time in ms
-            // } else {
-            //     state.remainingMs = state.sessionMs;
-            // }
-
-            //UI Text & Auto-Start Decision:
-
-            // if(sessionId && sessionStatus === 'running')
-            // {
-            //     setTimeout(() => {
-            //         startPauseBtn.textContent = 'Pause';
-            //         startTimer();
-            //         startPauseBtn.disabled = false;
-            //     }, 150);
-            // } else {
-            //     //either no session or session is paused/finished - no need to start timer
-            //     //now, specifically for pause functionality
-            //     if(sessionStatus === 'paused')
-            //     {
-            //         startPauseBtn.textContent = 'Start';
-            //         startPauseBtn.disabled = false;
-            //     }
-            //     render(); //to ensure correct remainingMs is shown
-            // }
 
             //convert ms to proper format HH:MM
             function formatTime(ms) {
@@ -440,7 +376,7 @@
                 return `${minutes}:${seconds.toString().padStart(2,'0')}`;
             }
 
-            //
+            //show and update timer
             function render() {
                 const display = document.getElementById('timerDisplay');
                 display.textContent = formatTime(state.remainingMs);
@@ -448,20 +384,11 @@
 
             render();
 
-            //Helper function to dynamically update form's action and method
-            function setFormAction(url, method='POST')
-            {
-                timerForm.action = url;
-
-                const methodInput = document.getElementById('_method');
-                methodInput.value = (method && method.toUpperCase()!== 'POST')? method.toUpperCase() : '' ;
-            }
-
             buttons.forEach(button => {
                 button.addEventListener('click', async (e) => {
                     e.preventDefault(); //stop it from submitting the form on clicking the type buttons
 
-                    const sid = document.getElementById('session_id')?.value;
+                    const sid = getSessionId();
                     if(sid)
                     {
                         const sessionMs = state.sessionMs;
@@ -470,22 +397,21 @@
                         await sendReset(sid, elapsedMs);
                     }
 
-                    //update hidden input
-                    hiddenInput.value = button.getAttribute('data-type');
+                    //update type value
+                    setSessionData({type: button.getAttribute('data-type')});
                     //update button duration and state objects accordingly
                     activeBtnDuration = parseInt(button.dataset.durationMinutes, 10) || 25;
-                    document.getElementById('duration_minutes').value = activeBtnDuration;
+                    setSessionData({duration_minutes: activeBtnDuration});
 
                     state.sessionMs = activeBtnDuration * 60 * 1000;
                     state.remainingMs = state.sessionMs;
-                    resetLocalTimer(); //stops the timer, sets UI to start and shows full session (remainingMs)
+                    resetLocalTimer(activeBtnDuration); //stops the timer, sets UI to start and shows full session (remainingMs)
                     // sendReset();
 
                     //toggle active class
                     buttons.forEach(button => button.classList.remove('bg-white','text-black'));
                     button.classList.add('bg-white','text-black');
-
-                    // render();
+                    render();
                 })
             })
 
@@ -539,21 +465,11 @@
                 render();
 
                 // notify server once (guard prevents duplicate calls)
-                const sid = document.getElementById('session_id')?.value;
+                // const sid = document.getElementById('session_id')?.value;
+                const sid = getSessionId();
                 if (sid && !state.isFinishing) {
                     sendFinish(sid);
                 }
-
-                // const sid = document.getElementById('session_id')?.value;
-                // if(!sid) return;
-                //
-                // const totalElapsedSeconds = Math.floor(state.sessionMs/1000);
-                // document.getElementById('elapsed_seconds').value = totalElapsedSeconds;
-                //
-                // setFormAction(`/sessions/${sid}/finish`, 'PATCH');
-                // document.getElementById('action').value = 'Finish';
-                //
-                // timerForm.submit();
             }
 
             function resetLocalTimer(durationMinutes)
@@ -579,7 +495,7 @@
                     // pauseTimer();
 
                     //step 2: get SID
-                    const sid = document.getElementById('session_id')?.value;
+                    const sid = getSessionId();
                     if(!sid) {
                         console.warn('No session id found - skipping server side pause');
                         return;
@@ -593,16 +509,9 @@
                     const elapsedSoFarMs = Math.max(0, Math.min(sessionMs,rawElapsedMs));
 
                     sendPause(sid, elapsedSoFarMs);
-
-                    // //step 3:update form's action and method
-                    // setFormAction(`/sessions/${sid}/pause`, 'PATCH');
-                    // document.getElementById('action').value = 'Pause';
-                    //
-                    // //synchronous form submit
-                    // timerForm.submit();
                 } else {
                     //going from paused to running
-                    const sid = document.getElementById('session_id')?.value;
+                    const sid = getSessionId();
                     const currentStatus = document.getElementById('session_status')?.value;
                     const sessionMs = state.sessionMs;
                     const rawElapsedMs = sessionMs - state.remainingMs;
@@ -613,31 +522,12 @@
                     } else {
                         sendStart();
                     }
-
-                    // //SYNCHRONOUS LOGIC:
-
-
-                    // durationMinutes.value = activeBtnDuration;
-                    //
-                    // //set action intent and disable the button to avoid double form submission
-                    // document.getElementById('action').value = "start";
-                    // startPauseBtn.disabled = true;
-                    //
-                    // if(sid && currentStatus === 'paused')
-                    // {
-                    //     setFormAction(`/sessions/${sid}/resume`, 'PATCH');
-                    // } else {
-                    //     setFormAction("/sessions/start", 'POST');
-                    // }
-                    //
-                    // //submit the form(POST /sessions/start)
-                    // timerForm.submit();
                 }
             });
 
             const resetBtn = document.getElementById('resetBtn');
             resetBtn.addEventListener('click', () => {
-                const sid = document.getElementById('session_id')?.value;
+                const sid = getSessionId();
                 if(!sid) return;
 
                 const sessionMs = state.sessionMs;

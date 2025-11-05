@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\PomodoroSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use function PHPUnit\Framework\isNull;
 
 
 class PomodoroSessionController extends Controller
@@ -30,132 +28,45 @@ class PomodoroSessionController extends Controller
         ]);
 
         return $this->respond($session, $request);
-
-//        $payload = $this->toPayload($session);
-//
-//        if($request->wantsJson()) {
-//            return response()->json($payload,200);
-//        }
-//
-//        return redirect() -> back() -> with('session_id', $session -> id)
-//            -> with('session_status', $session->status)
-//            ->with('elapsed_seconds', $session->elapsed_seconds)
-//            ->with('type', $session->type)
-//            ->with('duration_minutes', $session->duration_minutes);
     }
 
     public function pause(PomodoroSession $session, Request $request)
     {
-
-        if (($session->user_id != auth() -> id()) && ($session->session_id != null))
-        {
-            abort(403);
-        }
-
-//        $durationSeconds = $session -> duration_minutes * 60;
-//
-//        if($request->has('elapsed_ms')) {
-//            $clientElapsed = (int) $request -> input('elapsed_ms', null);;
-//            $elapsedMs = max(0, min($clientElapsed, $durationSeconds * 1000));
-//            $session -> elapsed_seconds = max($session->elapsed_seconds, (int) floor($elapsedMs / 1000));
-//        }
+        $this->authorizeSession($session);
 
         $session->elapsed_seconds = $this->calcElapsedSeconds($session, $request);
-
         $session->status = 'paused';
         $session->save();
 
         return $this->respond($session, $request);
-
-//        $payload = $this->toPayload($session);
-//
-//        if($request->wantsJson()) {
-//            return response()->json($payload,200);
-//        }
-//
-//        return redirect() -> back() -> with('session_id', $session-> id)
-//            ->with('session_status', $session->status)
-//            ->with('elapsed_seconds', $session->elapsed_seconds)
-//            ->with('type', $session->type)
-//            ->with('duration_minutes', $session->duration_minutes);
     }
 
     public function resume(PomodoroSession $session, Request $request)
     {
-        if ($session->user_id != auth()->id())
-        {
-            abort(403);
-        }
-
-//        $durationSeconds = $session -> duration_minutes * 60;
-//
-//        if($request->has('elapsed_ms')) {
-//            $clientElapsed = (int) $request -> input('elapsed_ms', null);;
-//            $elapsedMs = max(0, min($clientElapsed, $durationSeconds * 1000));
-//            $session -> elapsed_seconds = max($session->elapsed_seconds, (int) floor($elapsedMs / 1000));
-//        }
+        $this->authorizeSession($session);
 
         $session->elapsed_seconds = $this->calcElapsedSeconds($session, $request);
-
         $session->status = 'running';
         $session->save();
 
         return $this->respond($session, $request);
-
-//        if($request->wantsJson()) {
-//            return response() -> json($payload, 200);
-//        }
-//
-//        return redirect() -> back() -> with('session_id', $session-> id)
-//            ->with('session_status', $session->status)
-//            ->with('elapsed_seconds', $session->elapsed_seconds)
-//            ->with('type', $session->type)
-//            ->with('duration_minutes', $session->duration_minutes);
     }
 
     public function cancel(PomodoroSession $session, Request $request)
     {
-        if($session->user_id != auth()->id()) {
-            abort(403);
-        }
+        $this->authorizeSession($session);
 
         $session->status = 'cancelled';
         $session->ended_at = now();
-
-//        $durationMs = $session->duration_minutes * 60 * 1000;
-//
-//        if($request->has('elapsed_ms')) {
-//            $clientElapsedMs = (int) $request->input('elapsed_ms', null);
-//            $clampedMs = max(0, min($clientElapsedMs, $durationMs));
-//            $clientElapsedSeconds = (int) floor($clampedMs / 1000);
-//
-//            $session->elapsed_seconds = max($session->elapsed_seconds, $clientElapsedSeconds);
-//        }
-
         $session->elapsed_seconds = $this->calcElapsedSeconds($session, $request);
-
         $session->save();
 
         return $this->respond($session, $request);
-
-//        $payload = $this->toPayload($session);
-//
-//        if($request->wantsJson()) {
-//            return response() -> json($payload, 200);
-//        }
-//
-//        return redirect() -> back() -> with('session_id', $session->id)
-//            ->with('session_status', $session->status)
-//            ->with('elapsed_seconds', $session->elapsed_seconds)
-//            ->with('type', $session->type)
-//            ->with('duration_minutes', $session->duration_minutes);
     }
 
     public function finish(PomodoroSession $session, Request $request)
     {
-        if($session->user_id != auth()->id()){
-            abort(403);
-        }
+        $this->authorizeSession($session);
 
         $durationSeconds = $session->duration_minutes * 60;
         $session->elapsed_seconds = $durationSeconds;
@@ -164,18 +75,6 @@ class PomodoroSessionController extends Controller
         $session->save();
 
         return $this->respond($session, $request);
-
-//        $payload = $this->toPayload($session);
-//
-//        if($request->wantsJson()) {
-//            return response() -> json($payload, 200);
-//        }
-//
-//        return redirect() -> back() -> with('session_id', $session->id)
-//            -> with('session_status', $session->status)
-//            -> with('elapsed_seconds', $session->elapsed_seconds)
-//            -> with('type', $session->type)
-//            ->with('duration_minutes', $session->duration_minutes);
     }
 
     public function destroy()
@@ -219,6 +118,14 @@ class PomodoroSessionController extends Controller
         }
 
         return $session->elapsed_seconds;
+    }
+
+    private function authorizeSession(PomodoroSession $session): void
+    {
+        if (($session->user_id != auth()->id()))
+        {
+            abort(403);
+        }
     }
 
 }
