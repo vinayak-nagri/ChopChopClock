@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>ChopChopClock</title>
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
 <body class="bg-black text-white pb-20 min-h-screen flex flex-col">
@@ -24,7 +35,7 @@
         <div class="space-x-6">
             <a href="/dashboard">Dashboard</a>
             <a href="#">History</a>
-            <a href="#">Settings</a>
+            <a href="/settings">Settings</a>
         </div>
 
         <form method="POST" action="/logout">

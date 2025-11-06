@@ -4,6 +4,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PomodoroSessionController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\UserSettingController;
+use App\Models\UserSetting;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,3 +37,8 @@ Route::patch('/sessions/{session}/resume',[PomodoroSessionController::class, 're
 Route::patch('/sessions/{session}/cancel',[PomodoroSessionController::class, 'cancel'])->name('sessions.cancel');
 Route::patch('/sessions/{session}/finish',[PomodoroSessionController::class, 'finish'])->name('sessions.finish');
 Route::delete('/sessions/{session}/destroy', [PomodoroSessionController::class, 'destroy'])->name('sessions.destroy');
+
+//User Settings
+
+Route::get('/settings', [UserSettingController::class, 'index']) -> middleware('auth');
+Route::put('/settings', [UserSettingController::class, 'update']) -> middleware('auth');
