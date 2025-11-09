@@ -11,7 +11,7 @@ class UserSettingController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $defaultSettings = UserSetting::where('user_id',$userId);
+        $defaultSettings = UserSetting::where('user_id',$userId)->first();
         return view('user_settings', compact('defaultSettings'));
     }
 

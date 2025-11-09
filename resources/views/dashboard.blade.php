@@ -7,7 +7,6 @@
 
     <section> {{--section for main timer--}}
         <form action="/sessions/start" method="POST" id="timerForm">
-            <input type="hidden" name="_method" id="_method" value="">
             @csrf
             <div class="flex flex-col relative bg-red-400 rounded-xl p-6 border border-white/60 w-lg h-80 mb-2">
                 <div class="self-center space-x-24 items-center">
@@ -51,7 +50,7 @@
                 <div class="font-semibold"> Status </div>
 
                 @foreach ($recentRecords as $record)
-                    <div>{{ $record -> started_at -> format('H:i A')}}</div>
+                    <div>{{ $record -> started_at -> format('h:i A')}}</div>
 {{--Pure PHP Method:<div>{{ ucwords(str_replace('_',' ',$record->type)) }}</div>--}}
                     <div>{{ Str::title(str_replace('_',' ',$record->type)) }}</div>
                     <div>{{ $record -> duration_minutes }}</div>

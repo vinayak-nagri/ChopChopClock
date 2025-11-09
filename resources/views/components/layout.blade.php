@@ -34,7 +34,7 @@
         @auth()
         <div class="space-x-6">
             <a href="/dashboard">Dashboard</a>
-            <a href="#">History</a>
+            <a href="/history">History</a>
             <a href="/settings">Settings</a>
         </div>
 

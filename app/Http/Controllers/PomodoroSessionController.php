@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PomodoroSession;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
@@ -75,6 +76,70 @@ class PomodoroSessionController extends Controller
         $session->save();
 
         return $this->respond($session, $request);
+    }
+
+    public function history()
+    {
+        $userId = auth()->id();
+        $records = PomodoroSession::where('user_id', $userId)
+                   -> where('type', 'work')
+                   -> get()
+                   -> groupBy('status');
+
+        $completedRecords = $records->get('completed',collect());
+        $cancelledRecords = $records->get('cancelled',collect());
+
+        $completedPaginator = PomodoroSession::where('user_id', $userId)
+                              -> where('type','work')
+                              -> where('status','completed')
+                              -> orderBy('started_at', 'desc')
+                              -> simplePaginate(5,['*'], 'completed_page');
+
+
+        $cancelledPaginator = PomodoroSession::where('user_id', $userId)
+            -> where('type','work')
+            -> where('status','cancelled')
+            -> orderBy('started_at', 'desc')
+            -> simplePaginate(5,['*'], 'cancelled_page');
+
+        $completedMinutes = (int) $completedRecords->sum('duration_minutes');
+        $cancelledSeconds = (int) $cancelledRecords->sum('elapsed_seconds');
+
+        $totalSeconds = ($completedMinutes * 60) + $cancelledSeconds;
+        $totalHours = intDiv($totalSeconds, 3600);
+        $remainingMinutes = intDiv($totalSeconds % 3600, 60);
+        $formattedTotal = sprintf("%d hr %02d min", $totalHours, $remainingMinutes);
+
+        $totalDays = $records->flatten()
+                     ->pluck('started_at')
+                     ->map(fn($date) => $date -> toDateString())
+                     ->unique()
+                     ->count();
+
+        $dates = $completedRecords->pluck('started_at')
+            ->map(fn($date) => $date -> toDateString())
+            ->unique();
+
+
+        $streak = true; $streakCount=0;
+        $i = Carbon::today();
+        $date = $i->toDateString();
+
+        while($streak)
+        {
+            if($dates->contains($date)){
+                $streakCount += 1;
+            } else {
+                $streak = false;
+            }
+            $date = $i->subDay()->toDateString();
+        }
+
+        return view('history', compact('completedPaginator','cancelledPaginator'),
+                    ['formattedTotal' => $formattedTotal,
+                     'totalDays' => $totalDays,
+                     'streakCount' => $streakCount,
+                    ]);
     }
 
     public function destroy()

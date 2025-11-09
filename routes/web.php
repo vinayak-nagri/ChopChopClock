@@ -38,7 +38,9 @@ Route::patch('/sessions/{session}/cancel',[PomodoroSessionController::class, 'ca
 Route::patch('/sessions/{session}/finish',[PomodoroSessionController::class, 'finish'])->name('sessions.finish');
 Route::delete('/sessions/{session}/destroy', [PomodoroSessionController::class, 'destroy'])->name('sessions.destroy');
 
-//User Settings
+//History
+Route::get('/history', [PomodoroSessionController::class, 'history']) -> middleware('auth');
 
+//User Settings
 Route::get('/settings', [UserSettingController::class, 'index']) -> middleware('auth');
 Route::put('/settings', [UserSettingController::class, 'update']) -> middleware('auth');
