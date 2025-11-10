@@ -13,9 +13,24 @@ class DashboardController extends Controller
     {
         $userId= auth()->id();
 
-        $recentRecords = PomodoroSession::where('user_id', $userId)
-                         ->whereDate('started_at',today())
-                         ->get();
+        $recentWorkSessions = PomodoroSession::where('user_id', $userId)
+            ->whereDate('started_at', today())
+            ->where('type', 'work')
+            ->where('status', 'completed')
+            ->get();
+
+        $recentCancelledSessions = PomodoroSession::where('user_id', $userId)
+            ->whereDate('started_at', today())
+            ->where('type', 'work')
+            ->where('status', 'cancelled')
+            ->get();
+
+        $countWorkSessions = $recentWorkSessions->count();
+
+        $completedMinutes = (int) $recentWorkSessions->sum('duration_minutes');
+        $cancelledSeconds = (int) $recentCancelledSessions->sum('elapsed_seconds');
+
+        $formattedTotal = PomodoroSession::formatTotalTime($completedMinutes, $cancelledSeconds);
 
         $defaultSettings = UserSetting::where('user_id', $userId)->firstOrFail();
 
@@ -24,6 +39,9 @@ class DashboardController extends Controller
                          ->latest()
                          ->first();
 
-        return view('dashboard', compact('recentRecords','defaultSettings', 'activeSession'));
+        return view('dashboard', compact('defaultSettings', 'activeSession'),
+                    ['countWorkSessions' => $countWorkSessions,
+                     'formattedTotal' => $formattedTotal
+                    ]);
     }
 }

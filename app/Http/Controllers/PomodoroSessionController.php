@@ -105,10 +105,7 @@ class PomodoroSessionController extends Controller
         $completedMinutes = (int) $completedRecords->sum('duration_minutes');
         $cancelledSeconds = (int) $cancelledRecords->sum('elapsed_seconds');
 
-        $totalSeconds = ($completedMinutes * 60) + $cancelledSeconds;
-        $totalHours = intDiv($totalSeconds, 3600);
-        $remainingMinutes = intDiv($totalSeconds % 3600, 60);
-        $formattedTotal = sprintf("%d hr %02d min", $totalHours, $remainingMinutes);
+        $formattedTotal = PomodoroSession::formatTotalTime($completedMinutes, $cancelledSeconds);
 
         $totalDays = $records->flatten()
                      ->pluck('started_at')

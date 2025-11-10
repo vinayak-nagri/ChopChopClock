@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -9,4 +10,22 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     --color-black: #060606;
+}
+
+.preset-btn-base { @apply
+    cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-full
+    bg-white/20 shadow-xl shadow-red-800 border-solid border-1 border-white/50 tracking-wide
+    transition transform duration-150 ease-out hover:scale-105
+    active:scale-95 active:shadow-[0_2px_10px_rgba(0,0,0,0.3)]
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/30
+    select-none disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.preset-btn-selected { @apply
+    font-bold bg-blue-600/80 shadow-xl shadow-blue-800;
+}
+
+.card { @apply
+    flex flex-row space-x-4 max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-sm
+    dark:bg-gray-800 dark:border-gray-700 hover:bg-rose-700/90
 }

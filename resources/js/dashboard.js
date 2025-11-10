@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // const defaultType = hiddenInput.value;
     const defaultType = document.getElementById('type').value;
     const defaultBtn = document.querySelector(`[data-type="${defaultType}"]`);
-    if(defaultBtn) defaultBtn.classList.add('bg-white','text-black');
+    setSelectedPreset(defaultBtn);
 
     const startPauseBtn = document.getElementById('startPauseBtn');
     const timerForm = document.getElementById('timerForm');
@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
         intervalId: null,
         isFinishing:false,
     };
+
+    function setSelectedPreset(button) {
+        buttons.forEach(b => b.classList.remove('preset-btn-selected'));
+        if(button) button.classList.add('preset-btn-selected');
+    }
 
     function getSessionId() {
         const sessionId = document.getElementById('session_id');
@@ -345,8 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // sendReset();
 
             //toggle active class
-            buttons.forEach(button => button.classList.remove('bg-white','text-black'));
-            button.classList.add('bg-white','text-black');
+            setSelectedPreset(button);
             render();
         })
     })

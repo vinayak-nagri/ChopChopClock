@@ -14,6 +14,14 @@ class PomodoroSession extends Model
 
     protected $guarded = [];
 
+    public static function formatTotalTime($completedMinutes, $cancelledSeconds = 0)
+    {
+        $totalSeconds = ($completedMinutes * 60) + $cancelledSeconds;
+        $totalHours = intDiv($totalSeconds, 3600);
+        $remainingMinutes = intDiv($totalSeconds % 3600, 60);
+        return sprintf("%d hr %02d min", $totalHours, $remainingMinutes);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
