@@ -91,7 +91,7 @@
                             {{$completedRecord -> started_at -> toFormattedDayDateString()}}
                         </th>
                         <td class="px-6 py-4">
-                            {{$completedRecord -> started_at -> format('h:i A')}} - {{$completedRecord -> ended_at -> format('h:i A')}}
+                            {{$completedRecord -> started_at -> setTimezone($timezone) -> format('h:i A')}} - {{$completedRecord -> ended_at ->setTimezone($timezone) -> format('h:i A')}}
                         </td>
                         <td class="px-6 py-4">
                             {{$completedRecord -> duration_minutes}}
@@ -106,7 +106,7 @@
                                 {{$cancelledRecord -> started_at -> toFormattedDayDateString()}}
                             </th>
                             <td class="px-6 py-4">
-                                {{$cancelledRecord -> started_at -> format('h:i A')}} - {{$cancelledRecord -> ended_at -> format('h:i A')}}
+                                {{$cancelledRecord -> started_at -> setTimezone($timezone) -> format('h:i A')}} - {{$cancelledRecord -> ended_at -> setTimezone($timezone) -> format('h:i A')}}
                             </td>
                             <td class="px-6 py-4">
                                 {{round($cancelledRecord->elapsed_seconds / 60)}}

@@ -25,6 +25,13 @@
         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
         @enderror
 
+        <label for="timezone" class="font-bold text-shadow-md">Timezone</label>
+        <select name="timezone" id="timezone" class="h-6">
+            @foreach(timezone_identifiers_list(DateTimeZone::ALL_WITH_BC) as $tz)
+                <option value="{{ $tz }}">{{ $tz }}</option>
+            @endforeach
+        </select>
+
         <label for="password" class="font-bold text-shadow-md">Password</label>
         <input type="password" id="password" name="password" placeholder=""
                class="block w-full h-10 rounded-xl bg-white/10 border border-white/10 px-5 py-4 my-2">
@@ -42,3 +49,8 @@
         </div>
     </form>
 </x-layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => console.log(Intl.DateTimeFormat().resolvedOptions().timeZone));
+    document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+</script>

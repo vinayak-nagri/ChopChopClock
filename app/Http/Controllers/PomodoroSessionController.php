@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PomodoroSession;
+use App\Models\UserSetting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -81,6 +82,8 @@ class PomodoroSessionController extends Controller
     public function history()
     {
         $userId = auth()->id();
+        $timezone = UserSetting::where('user_id',$userId)->pluck('timezone')->first();
+
         $records = PomodoroSession::where('user_id', $userId)
                    -> where('type', 'work')
                    -> get()
@@ -132,10 +135,11 @@ class PomodoroSessionController extends Controller
             $date = $i->subDay()->toDateString();
         }
 
-        return view('history', compact('completedPaginator','cancelledPaginator'),
+        return view('history', compact('completedPaginator','cancelledPaginator' ),
                     ['formattedTotal' => $formattedTotal,
                      'totalDays' => $totalDays,
                      'streakCount' => $streakCount,
+                     'timezone' => $timezone
                     ]);
     }
 
