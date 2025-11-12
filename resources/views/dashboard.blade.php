@@ -1,4 +1,5 @@
 <x-layout>
+<x-slot:title>Dashboard | ChopChopClock</x-slot:title>
 <div class="flex flex-col items-center"> {{--main div--}}
     <section> {{--section for page heading--}}
         <x-page-heading>Dashboard</x-page-heading>
@@ -8,7 +9,8 @@
     <section> {{--section for main timer--}}
         <form action="/sessions/start" method="POST" id="timerForm">
             @csrf
-            <div class="flex flex-col relative bg-rose-700/90 shadow-lg shadow-red-900 backdrop-blur-sm rounded-xl p-6 border border-white/60 w-xl h-90 mb-2 transition hover:scale-[1.01] hover:shadow-2xl">
+            <div class="flex flex-col relative bg-rose-700/90 shadow-lg shadow-red-900 backdrop-blur-sm rounded-xl
+            p-6 border border-white/60 w-xl h-90 mb-2 transition hover:scale-[1.01] hover:shadow-2xl">
                 <div class="flex-row self-center space-x-16 items-center justify-center">
                     <button class="presetBtn preset-btn-base" data-type="work" data-duration-minutes="{{$defaultSettings -> work_minutes}}" type="button">
                         Work
@@ -76,7 +78,7 @@
                          class="w-7 h-7 text-gray-500 dark:text-white mb-3 lucide lucide-target-icon lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                     <div class="flex flex-col">
                         <h5 class="mb-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Work Sessions</h5>
-                        <p class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{$countWorkSessions}}</p>
+                        <p class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white" id="countMetric">{{$countWorkSessions}}</p>
                     </div>
                 </div>
 
@@ -85,12 +87,29 @@
                         <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
                     </svg>
                     <div class="flex flex-col">
-                        <h5 class="mb-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Total Hours</h5>
-                        <p class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{$formattedTotal}}</p>
+                        <h5 class="mb-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                            Total Hours</h5>
+                        <p class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white" id="hoursMetric">
+                            {{$formattedTotal}}</p>
                     </div>
+                </div>
+
+                <div id="toast-success" class="flex items-center w-full max-w-xs p-4 mb-4 mt-2 text-gray-500 hidden
+                         fixed top-4 right-4 flex-col gap-2 z-[9999]
+                       bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800" role="alert">
+                    <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                        </svg>
+                        <span class="sr-only">Check icon</span>
+                    </div>
+                    <div class="ms-3 text-sm font-normal" id="toast-message">Session Complete!</div>
                 </div>
             </div>
         </div>
     </section>
 </div>
+    <script>
+
+    </script>
 </x-layout>

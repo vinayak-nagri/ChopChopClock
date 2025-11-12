@@ -1,4 +1,5 @@
 <x-layout>
+    <x-slot:title>History | ChopChopClock</x-slot:title>
     <div class="flex flex-col items-center"> {{--main div--}}
         <section> {{--section for page heading--}}
             <x-page-heading>History</x-page-heading>

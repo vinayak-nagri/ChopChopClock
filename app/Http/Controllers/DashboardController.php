@@ -41,7 +41,36 @@ class DashboardController extends Controller
 
         return view('dashboard', compact('defaultSettings', 'activeSession'),
                     ['countWorkSessions' => $countWorkSessions,
-                     'formattedTotal' => $formattedTotal
+                     'formattedTotal' => $formattedTotal,
                     ]);
+    }
+
+    public function getMetrics(Request $request)
+    {
+        $userId= auth()->id();
+
+        $recentWorkSessions = PomodoroSession::where('user_id', $userId)
+            ->whereDate('started_at', today())
+            ->where('type', 'work')
+            ->where('status', 'completed')
+            ->get();
+
+        $recentCancelledSessions = PomodoroSession::where('user_id', $userId)
+            ->whereDate('started_at', today())
+            ->where('type', 'work')
+            ->where('status', 'cancelled')
+            ->get();
+
+        $countWorkSessions = $recentWorkSessions->count();
+
+        $completedMinutes = (int) $recentWorkSessions->sum('duration_minutes');
+        $cancelledSeconds = (int) $recentCancelledSessions->sum('elapsed_seconds');
+
+        $formattedTotal = PomodoroSession::formatTotalTime($completedMinutes, $cancelledSeconds);
+
+        return response() -> json([
+            'count_work_sessions' => $countWorkSessions,
+            'formatted_total' => $formattedTotal
+        ]);
     }
 }

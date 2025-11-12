@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>ChopChopClock</title>
+    <title>{{$title ?? 'ChopChopClock'}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+    {{--Remove the arrow buttons from Number text fields in form inputs--}}
     <style>
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -18,7 +20,7 @@
 
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
-<body class="bg-black text-white pb-20 min-h-screen flex flex-col">
+<body class="bg-black text-white pb-10 min-h-screen flex flex-col">
 
 {{-- Main Div --}}
 <div class="px-10 flex-grow">
@@ -33,9 +35,9 @@
 
         @auth()
         <div class="space-x-6">
-            <a href="/dashboard">Dashboard</a>
-            <a href="/history">History</a>
-            <a href="/settings">Settings</a>
+            <x-nav-link href="/dashboard">Dashboard</x-nav-link>
+            <x-nav-link href="/history">History</x-nav-link>
+            <x-nav-link href="/settings">Settings</x-nav-link>
         </div>
 
         <form method="POST" action="/logout">
@@ -60,6 +62,9 @@
 </div>
 <footer class="px-10 mb-auto mt-2">
     <div class="border-t border-white/60"></div>
+    <div class="flex justify-center items-center mt-3 ">
+        © ChopChopClock
+    </div>
     {{--Space for Social Media Buttons--}}
     {{--Space for Trademark--}}
 </footer>

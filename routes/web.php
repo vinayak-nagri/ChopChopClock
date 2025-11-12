@@ -29,6 +29,7 @@ Route::post('/login',[SessionController::class, 'store']);
 Route::delete('/logout',[SessionController::class, 'destroy'])->middleware('auth');
 
 Route::get('/dashboard',[DashboardController::class,'index']) -> middleware ('auth')->name('dashboard');
+Route::get('/dashboard/metrics',[DashboardController::class, 'getMetrics']) -> middleware('auth') -> name('dashboard.metrics');
 
 //Pomodoro Session Handling
 Route::post('/sessions/start', [PomodoroSessionController::class, 'start'])->name('sessions.start');

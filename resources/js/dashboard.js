@@ -8,7 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startPauseBtn = document.getElementById('startPauseBtn');
     const timerForm = document.getElementById('timerForm');
+    const toast = document.getElementById('toast-success');
+    const toastMessage = document.getElementById('toast-message');
     let activeBtnDuration = defaultBtn ? parseInt(defaultBtn.dataset.durationMinutes,10): 25;
+
+    const countMetric = document.getElementById('countMetric');
+    const hoursMetric = document.getElementById('hoursMetric');
+
+    let audioUnlocked = false;
+
+    const bell = new Howl({
+        src: ['sounds/notification.wav']
+    });
 
     let lastTick = null;
 
@@ -29,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function getSessionId() {
         const sessionId = document.getElementById('session_id');
         return sessionId?.value || '';
+    }
+
+    function getSessionType() {
+        const sessionType = document.getElementById('type');
+        return sessionType?.value || '';
     }
 
     function setSessionData({session_id,
@@ -257,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: data.type
             })
 
-            resetLocalTimer(data.duration_minutes);
+            resetLocalTimer(data.duration_minutes, data.type);
         } catch(err)
         {
             console.error('sendReset() Network error: ', err);
@@ -289,8 +305,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Invalid server response. Please try again.');
                 return;
             }
+            finishLocalTimer();
 
-            resetLocalTimer(data.duration_minutes);
+            //next type
+            const nextType = (data.type === 'work') ? 'short_break' : 'work';
+
+            //get that button
+            const nextBtn = document.querySelector(`[data-type="${nextType}"]`);
+            const nextDuration = nextBtn ? parseInt(nextBtn.dataset.durationMinutes, 10) : 5;
+
+            resetLocalTimer(nextDuration, nextType);
+
+            try {
+                const res = await fetch('/dashboard/metrics');
+                const data = await res.json();
+
+                if(countMetric && typeof data.count_work_sessions !== 'undefined') {
+                    countMetric.textContent = data.count_work_sessions;
+                }
+
+                if(hoursMetric && typeof data.formatted_total !== 'undefined') {
+                    hoursMetric.textContent = data.formatted_total;
+                }
+            } catch(err)
+            {
+                console.error("Metric Updates Failed", err);
+            }
 
             setSessionData({
                 session_id: '',
@@ -346,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             state.sessionMs = activeBtnDuration * 60 * 1000;
             state.remainingMs = state.sessionMs;
-            resetLocalTimer(activeBtnDuration); //stops the timer, sets UI to start and shows full session (remainingMs)
+            resetLocalTimer(activeBtnDuration,getSessionType()); //stops the timer, sets UI to start and shows full session (remainingMs)
             // sendReset();
 
             //toggle active class
@@ -363,6 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if(state.remainingMs <=0) {
             finishLocalTimer();
+            const sid = getSessionId();
+            if (sid && !state.isFinishing) {
+                sendFinish(sid);   // then notify backend and handle next mode
+            }
         } else{
             render();
         }
@@ -404,19 +448,30 @@ document.addEventListener('DOMContentLoaded', () => {
         startPauseBtn.textContent = "Start";
         render();
 
-        // notify server once (guard prevents duplicate calls)
-        // const sid = document.getElementById('session_id')?.value;
-        const sid = getSessionId();
-        if (sid && !state.isFinishing) {
-            sendFinish(sid);
+
+        if(getSessionType() === 'short_break')
+        {
+            toastMessage.textContent = 'Break Finished!';
         }
+        toast.classList.remove("hidden");
+        setTimeout(() => toast.classList.add("hidden"),10000);
+        if (bell) {
+            bell.play();
+        } else {
+            console.warn("Bell not initialized; skipping sound.");
+        }
+
     }
 
-    function resetLocalTimer(durationMinutes)
+    function resetLocalTimer(durationMinutes, type)
     {
         //reset sessionMs to total session minutes (server-authoritative)
         state.sessionMs = (Number(durationMinutes) || activeBtnDuration) * 60 * 1000;
         state.remainingMs = state.sessionMs; //set remainingMs to sessionMs
+
+        setSessionData({type: type});
+        const nextBtn = document.querySelector(`[data-type="${type}"]`);
+        setSelectedPreset(nextBtn);
 
         if(state.intervalId) {
             clearInterval(state.intervalId);
@@ -430,6 +485,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startPauseBtn.addEventListener('click', () => {
+        if (!audioUnlocked) {
+            bell.play();
+            bell.stop();
+            audioUnlocked = true;
+        }
         if(state.isRunning) {
             //step 1: pause locally
             // pauseTimer();
