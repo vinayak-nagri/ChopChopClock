@@ -448,13 +448,13 @@ document.addEventListener('DOMContentLoaded', () => {
         startPauseBtn.textContent = "Start";
         render();
 
-
+git
         if(getSessionType() === 'short_break')
         {
             toastMessage.textContent = 'Break Finished!';
         }
         toast.classList.remove("hidden");
-        setTimeout(() => toast.classList.add("hidden"),10000);
+        setTimeout(() => toast.classList.add("hidden"),6000);
         if (bell) {
             bell.play();
         } else {

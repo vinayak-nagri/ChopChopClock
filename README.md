@@ -1,61 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🕒 ChopChopClock
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-stack **Pomodoro timer web app** built with **Laravel** and **vanilla JavaScript**, designed to help users track focused work sessions, breaks, and long-term productivity streaks.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**ChopChopClock** is a personal productivity tool implementing the classic Pomodoro Technique.  
+It allows logged-in users to start, pause, resume, cancel, and finish timer sessions while keeping a daily and historical record of completed work cycles.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The app emphasizes:
+- Real-time timer updates handled via JavaScript.
+- RESTful Laravel backend endpoints for each timer action.
+- Clean, minimal UI powered by Tailwind CSS.
+- Persistent user settings and metrics tracking.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Features
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Core Timer
+- Start, pause, resume, cancel, and finish sessions asynchronously.
+- Auto-switches between *Work* and *Break* cycles.
+- Plays a desktop notification sound on completion.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Dashboard
+- Displays active timer, daily completed sessions, and total focused time.
+- Metrics update dynamically.
+- Preset buttons for **Work**, **Short Break**, and **Long Break** durations.
 
-## Laravel Sponsors
+### History
+- Paginated record of all past *Work* sessions.
+- Toggle between *Completed* and *Cancelled* sessions.
+- Daily streak calculation for consecutive productivity days.
+- Summary cards for total hours, total days logged, and current streak.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Settings
+- Customize durations for Work, Short Break, and Long Break.
+- Changes persist per user.
 
-### Premium Partners
+### Authentication
+- Built with Laravel’s authentication scaffolding.
+- Routes protected to ensure only logged-in users can access dashboards and API endpoints.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Layer | Technology                    |
+|-------|-------------------------------|
+| **Frontend** | Vanilla JS, Tailwind CSS, Blade Templates |
+| **Backend** | Laravel 12 (PHP 8.2)          |
+| **Database** | MySQL                         |
+| **Audio** | Howler.js (for notification sounds) |
+| **Package Manager** | Composer / npm                |
+| **Build Tool** | Vite                          |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Installation & Setup
 
-## Security Vulnerabilities
+### 1. Clone the repository
+```bash
+  git clone https://github.com/vinayak-nagri/ChopChopClock.git
+  cd ChopChopClock
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Install Dependencies
 
-## License
+```bash
+  composer install
+  npm install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Configure Environment
+
+```bash
+  cp .env.example .env
+  php artisan key:generate
+```
+
+Edit .env and update your database credentials.
+
+### 4. Run migrations
+
+```bash
+  php artisan migrate
+```
+
+### 5. Build frontend assets
+
+```bash
+  npm run dev
+```
+
+### 6. Start the local server
+
+```bash
+  php artisan serve
+```
+
+Visit the local server URL displayed in your terminal (usually http://127.0.0.1:8000 or http://localhost:8000).
+
+### Author
+
+Vinayak Nagri 
+<br><br>ChopChopClock — built as part of a full-stack learning project exploring Laravel, RESTful design, and asynchronous front-end integration.
