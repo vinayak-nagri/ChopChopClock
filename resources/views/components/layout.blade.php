@@ -29,7 +29,7 @@
         {{--Div for Logo--}}
         <div>
             <a href="/">
-                <img src="{{ asset('images/img.png') }}" alt="" height="100" width="100"/>
+                <img src="{{asset('images/img.png') }}" alt="" height="100" width="100"/>
             </a>
         </div>
 
