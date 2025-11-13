@@ -102,6 +102,12 @@ Edit .env and update your database credentials.
 
 Visit the local server URL displayed in your terminal (usually http://127.0.0.1:8000 or http://localhost:8000).
 
+## Build Notes (for CI)
+- Node >= 18
+- PHP 8.2
+- Run: `npm ci && npm run build`
+- Run: `composer install --no-dev --optimize-autoloader`
+
 ### Author
 
 Vinayak Nagri 

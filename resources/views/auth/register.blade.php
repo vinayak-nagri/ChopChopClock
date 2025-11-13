@@ -51,6 +51,5 @@
 </x-layout>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => console.log(Intl.DateTimeFormat().resolvedOptions().timeZone));
     document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 </script>
