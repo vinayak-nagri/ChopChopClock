@@ -15,7 +15,7 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
 //show registration form
-Route::get('/register', [RegisteredUserController::class, 'create']);
+Route::get('/register',[RegisteredUserController::class, 'create']);
 //store registration information
 Route::post('/register', [RegisteredUserController::class, 'store']);
 //show login form
