@@ -448,7 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
         startPauseBtn.textContent = "Start";
         render();
 
-git
         if(getSessionType() === 'short_break')
         {
             toastMessage.textContent = 'Break Finished!';
