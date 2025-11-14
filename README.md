@@ -111,4 +111,4 @@ Visit the local server URL displayed in your terminal (usually http://127.0.0.1:
 ### Author
 
 Vinayak Nagri 
-<br><br>ChopChopClock — built as part of a full-stack learning project exploring Laravel, RESTful design, and asynchronous front-end integration.
+<br><br>ChopChopClock - built as part of a full-stack learning project exploring Laravel, RESTful design, and asynchronous front-end integration.
