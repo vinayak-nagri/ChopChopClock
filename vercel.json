@@ -1,0 +1,39 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.8.0",
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    { "src": "/build/(.*)", "dest": "/public/build/$1" },
+    { "src": "/images/(.*)", "dest": "/public/images/$1" },
+    { "src": "/sounds/(.*)", "dest": "/public/sounds/$1" },
+    { "src": "/favicon.ico", "dest": "/public/favicon.ico" },
+    { "src": "/robots.txt", "dest": "/public/robots.txt" },
+    { "src": "/(.*)", "dest": "/api/index.php" }
+  ],
+  "env": {
+    "APP_NAME": "ChopChopClock",
+    "APP_ENV": "production",
+    "APP_DEBUG": "false",
+    "APP_URL": "https://chopchopclock.vercel.app",
+    "LOG_CHANNEL": "stderr",
+    "LARAVEL_STORAGE_PATH": "/tmp/laravel-storage",
+    "VIEW_COMPILED_PATH": "/tmp/laravel-storage/framework/views",
+    "APP_CONFIG_CACHE": "/tmp/laravel-cache/config.php",
+    "APP_EVENTS_CACHE": "/tmp/laravel-cache/events.php",
+    "APP_PACKAGES_CACHE": "/tmp/laravel-cache/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/laravel-cache/routes.php",
+    "APP_SERVICES_CACHE": "/tmp/laravel-cache/services.php",
+    "APP_MAINTENANCE_DRIVER": "file",
+    "SESSION_DRIVER": "cookie",
+    "CACHE_STORE": "array",
+    "QUEUE_CONNECTION": "sync"
+  }
+}

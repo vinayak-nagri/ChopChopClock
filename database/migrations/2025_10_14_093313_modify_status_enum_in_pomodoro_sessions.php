@@ -12,6 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('pomodoro_sessions', function (Blueprint $table) {
            DB::statement("
            ALTER TABLE pomodoro_sessions
@@ -26,6 +30,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('pomodoro_sessions', function (Blueprint $table) {
             DB::statement("
                 ALTER TABLE pomodoro_sessions
