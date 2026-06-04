@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
         $request->fulfill();
 
         return redirect()->intended('/dashboard');
-    })->middleware('signed')->name('verification.verify');
+    })->middleware('signed:relative')->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();

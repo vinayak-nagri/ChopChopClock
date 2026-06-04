@@ -70,7 +70,7 @@ it('verifies a user through a signed verification link', function () {
     $url = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
         'id' => $user->getKey(),
         'hash' => sha1($user->getEmailForVerification()),
-    ]);
+    ], false);
 
     $this->actingAs($user)
         ->get($url)
