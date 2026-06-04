@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserSetting;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class RegisteredUserController extends Controller
 {
@@ -29,21 +30,29 @@ class RegisteredUserController extends Controller
             'timezone' => ['required']
         ]);
 
-        $user = User::create($validatedAttributes);
+        $user = DB::transaction(function () use ($request, $validatedAttributes) {
+            $user = User::create([
+                'first_name' => $validatedAttributes['first_name'],
+                'last_name' => $validatedAttributes['last_name'],
+                'email' => $validatedAttributes['email'],
+                'password' => $validatedAttributes['password'],
+            ]);
 
-        $defaultSettings = [
-            'user_id' => $user->id,
-            'work_minutes' => 25,
-            'short_break_minutes' => 5,
-            'long_break_minutes' => 15,
-            'timezone' => $request->input('timezone'),
-        ];
+            UserSetting::create([
+                'user_id' => $user->id,
+                'work_minutes' => 25,
+                'short_break_minutes' => 5,
+                'long_break_minutes' => 15,
+                'timezone' => $request->input('timezone'),
+            ]);
 
-        UserSetting::create($defaultSettings);
+            return $user;
+        });
 
+        event(new Registered($user));
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect() -> intended('/');
+        return redirect()->route('verification.notice');
     }
 }

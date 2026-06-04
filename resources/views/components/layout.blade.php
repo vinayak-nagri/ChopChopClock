@@ -34,11 +34,17 @@
         </div>
 
         @auth()
-        <div class="space-x-6">
-            <x-nav-link href="/dashboard">Dashboard</x-nav-link>
-            <x-nav-link href="/history">History</x-nav-link>
-            <x-nav-link href="/settings">Settings</x-nav-link>
-        </div>
+            @if(auth()->user()->hasVerifiedEmail())
+            <div class="space-x-6">
+                <x-nav-link href="/dashboard">Dashboard</x-nav-link>
+                <x-nav-link href="/history">History</x-nav-link>
+                <x-nav-link href="/settings">Settings</x-nav-link>
+            </div>
+            @else
+            <div class="space-x-6">
+                <x-nav-link href="{{ route('verification.notice') }}">Verify Email</x-nav-link>
+            </div>
+            @endif
 
         <form method="POST" action="/logout">
             @csrf

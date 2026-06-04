@@ -14,9 +14,12 @@ function createUserWithSettings(): User
         'first_name' => 'React',
         'last_name' => 'Tester',
         'email' => fake()->unique()->safeEmail(),
-        'email_verified_at' => now(),
         'password' => Hash::make('password'),
     ]);
+
+    $user->forceFill([
+        'email_verified_at' => now(),
+    ])->save();
 
     UserSetting::create([
         'user_id' => $user->id,
