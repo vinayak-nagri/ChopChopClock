@@ -14,13 +14,15 @@
                     A clean Pomodoro timer to plan focused work sessions, track progress, and build a steady routine.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="/register" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-xl shadow-blue-600/25 transition hover:bg-blue-500">
+                    <a href="{{ auth()->check() ? '/dashboard' : '/register' }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-xl shadow-blue-600/25 transition hover:bg-blue-500">
                         Get Started
                         <span aria-hidden="true">→</span>
                     </a>
-                    <a href="/login" class="inline-flex items-center gap-2 rounded-lg border border-slate-600/70 bg-slate-900/60 px-6 py-3 font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-slate-800/80">
-                        Log In
-                    </a>
+                    @guest
+                        <a href="/login" class="inline-flex items-center gap-2 rounded-lg border border-slate-600/70 bg-slate-900/60 px-6 py-3 font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-slate-800/80">
+                            Log In
+                        </a>
+                    @endguest
                 </div>
             </div>
 
@@ -92,10 +94,12 @@
             <div class="glass-panel flex flex-col items-start justify-between gap-6 rounded-xl border-blue-500/60 p-7 sm:flex-row sm:items-center lg:px-10">
                 <div>
                     <h2 class="text-2xl font-bold text-white sm:text-3xl">Ready to build a better focus routine?</h2>
-                    <p class="mt-2 text-slate-400">Join ChopChopClock and take control of your time.</p>
+                    @guest
+                        <p class="mt-2 text-slate-400">Join ChopChopClock and take control of your time.</p>
+                    @endguest
                 </div>
-                <a href="/register" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-xl shadow-blue-600/25 transition hover:bg-blue-500">
-                    Create Your Account
+                <a href="{{ auth()->check() ? '/dashboard' : '/register' }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-xl shadow-blue-600/25 transition hover:bg-blue-500">
+                    {{ auth()->check() ? 'Start Now' : 'Create Your Account' }}
                     <span aria-hidden="true">→</span>
                 </a>
             </div>

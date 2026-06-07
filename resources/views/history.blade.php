@@ -10,13 +10,12 @@
     })->values();
 
     $cancelledRows = $cancelledPaginator->getCollection()
-        ->filter(fn ($record) => $record->elapsed_seconds > 60)
         ->map(function ($record) use ($timezone) {
             return [
                 'id' => $record->id,
                 'status' => $record->status,
                 'date' => $record->started_at->toFormattedDayDateString(),
-                'time' => $record->started_at->copy()->setTimezone($timezone)->format('h:i A') . ' - ' . $record->ended_at->copy()->setTimezone($timezone)->format('h:i A'),
+                'time' => $record->started_at->copy()->setTimezone($timezone)->format('h:i A') . ' - ' . ($record->ended_at?->copy()->setTimezone($timezone)->format('h:i A') ?? '—'),
                 'minutes' => round($record->elapsed_seconds / 60),
             ];
         })->values();
