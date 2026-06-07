@@ -8,25 +8,242 @@
 @source '../**/*.jsx';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     --color-black: #060606;
 }
 
-.preset-btn-base { @apply
-    cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-full
-    bg-white/20 shadow-xl shadow-red-800 border-solid border-1 border-white/50 tracking-wide
-    transition transform duration-150 ease-out hover:scale-105
-    active:scale-95 active:shadow-[0_2px_10px_rgba(0,0,0,0.3)]
-    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/30
-    select-none disabled:opacity-50 disabled:cursor-not-allowed;
+.app-shell {
+    background: linear-gradient(145deg, #030711 0%, #07101e 48%, #02050b 100%);
 }
 
-.preset-btn-selected { @apply
-    font-bold bg-blue-600/80 shadow-xl shadow-blue-800;
+.glass-panel {
+    background: linear-gradient(145deg, rgba(15, 24, 40, 0.88), rgba(6, 13, 25, 0.84));
+    border: 1px solid rgba(100, 116, 139, 0.3);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(18px);
 }
 
-.card { @apply
-    flex flex-row space-x-4 max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-sm
-    dark:bg-gray-800 dark:border-gray-700 hover:bg-rose-700/90
+.navbar-shell {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 6rem;
+    padding: 1rem 1.75rem;
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    border-radius: 1.25rem;
+    background: linear-gradient(110deg, rgba(15, 27, 48, 0.92), rgba(8, 15, 29, 0.94) 56%, rgba(23, 12, 31, 0.92));
+    box-shadow:
+        -10px 0 30px rgba(37, 99, 235, 0.12),
+        10px 0 32px rgba(217, 70, 239, 0.12),
+        0 12px 38px rgba(0, 0, 0, 0.26),
+        inset 0 -1px 0 rgba(236, 72, 153, 0.35);
+    backdrop-filter: blur(20px);
+}
+
+.navbar-links {
+    justify-self: center;
+}
+
+.navbar-actions {
+    justify-self: end;
+}
+
+.navbar-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    border: 1px solid rgba(232, 121, 249, 0.28);
+    border-radius: 0.75rem;
+    background: rgba(15, 23, 42, 0.45);
+    padding: 0.75rem 1.15rem;
+    color: #f8fafc;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(217, 70, 239, 0.08);
+    transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.navbar-logout:hover {
+    border-color: rgba(232, 121, 249, 0.65);
+    background: rgba(30, 41, 59, 0.7);
+    box-shadow: 0 0 24px rgba(217, 70, 239, 0.16);
+}
+
+.auth-stage {
+    background-image:
+        radial-gradient(circle at 18% 34%, rgba(37, 99, 235, 0.09), transparent 28%),
+        radial-gradient(circle at 82% 68%, rgba(217, 70, 239, 0.08), transparent 26%);
+}
+
+.auth-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(15, 25, 43, 0.94), rgba(7, 14, 28, 0.94));
+    border: 1px solid rgba(96, 165, 250, 0.75);
+    box-shadow:
+        0 0 0 1px rgba(232, 121, 249, 0.18),
+        -12px 0 42px rgba(37, 99, 235, 0.14),
+        12px 0 42px rgba(217, 70, 239, 0.14),
+        0 28px 80px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+}
+
+.auth-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.85), transparent 38%, transparent 62%, rgba(232, 121, 249, 0.85));
+    filter: blur(8px);
+    opacity: 0.4;
+}
+
+.auth-icon {
+    border: 1px solid rgba(96, 165, 250, 0.75);
+    background: rgba(15, 23, 42, 0.75);
+    box-shadow:
+        0 0 22px rgba(59, 130, 246, 0.25),
+        0 0 28px rgba(217, 70, 239, 0.14);
+}
+
+.auth-field-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.auth-field {
+    width: 100%;
+    min-height: 3.5rem;
+    border-radius: 0.625rem;
+    border: 1px solid rgba(100, 116, 139, 0.45);
+    background: rgba(15, 23, 42, 0.68);
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    color: white;
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.auth-field::placeholder {
+    color: #94a3b8;
+}
+
+.auth-field:focus {
+    border-color: rgba(96, 165, 250, 0.9);
+    background: rgba(15, 23, 42, 0.88);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 0 24px rgba(59, 130, 246, 0.12);
+}
+
+select.auth-field option {
+    background: #0f172a;
+    color: white;
+}
+
+.auth-field-icon {
+    position: absolute;
+    left: 1rem;
+    z-index: 1;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.auth-password-toggle {
+    position: absolute;
+    right: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 160ms ease;
+}
+
+.auth-password-toggle:hover {
+    color: white;
+}
+
+.auth-submit {
+    display: inline-flex;
+    width: 100%;
+    min-height: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.625rem;
+    background: linear-gradient(100deg, #2563eb, #6366f1 52%, #c026d3);
+    padding: 0.875rem 1.5rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.22), 0 8px 30px rgba(192, 38, 211, 0.15);
+    transition: filter 160ms ease, transform 160ms ease;
+}
+
+.auth-submit:hover {
+    filter: brightness(1.12);
+}
+
+.auth-submit:active {
+    transform: translateY(1px);
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 4.75rem;
+    height: 0.2rem;
+    margin: 0.65rem auto 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3b82f6, #ec4899);
+}
+
+.pagination-shell nav {
+    color: #94a3b8;
+}
+
+.pagination-shell nav a,
+.pagination-shell nav span {
+    border-color: rgba(100, 116, 139, 0.35) !important;
+    background: rgba(15, 23, 42, 0.7) !important;
+    color: #cbd5e1 !important;
+}
+
+.pagination-shell nav a:hover {
+    background: rgba(37, 99, 235, 0.25) !important;
+    color: white !important;
+}
+
+@media (max-width: 639px) {
+    .navbar-shell {
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem 1rem;
+        min-height: 0;
+        padding: 0.875rem 1rem 0.75rem;
+        border-radius: 1rem;
+    }
+
+    .navbar-links {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        width: 100%;
+        gap: 1.5rem;
+    }
+
+    .navbar-actions {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .navbar-logout {
+        gap: 0.4rem;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .section-title::after {
+        width: 3.5rem;
+    }
 }

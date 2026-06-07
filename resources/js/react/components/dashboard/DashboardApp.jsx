@@ -403,46 +403,47 @@ export default function DashboardApp({ settings, activeSession, metrics: initial
     const isBusy = isSubmitting || isFinishing;
 
     return (
-        <div className="flex flex-col items-center">
-            <section>
-                <h1 className="font-bold text-4xl text-center">
+        <div>
+            <section className="mb-8 text-center">
+                <h1 className="section-title text-4xl font-bold text-white sm:text-5xl">
                     Dashboard
                 </h1>
-                <div className="h-1 w-32 bg-white/60 mb-4" />
             </section>
 
-            <TimerCard
-                presets={presets}
-                selectedType={sessionData.type}
-                displayTime={formatTime(remainingMs)}
-                isRunning={isRunning}
-                isBusy={isBusy}
-                hasSession={Boolean(sessionData.id)}
-                onPresetSelect={handlePresetSelect}
-                onStartPause={handleStartPause}
-                onReset={handleReset}
-            />
+            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                <TimerCard
+                    presets={presets}
+                    selectedType={sessionData.type}
+                    displayTime={formatTime(remainingMs)}
+                    isRunning={isRunning}
+                    isBusy={isBusy}
+                    hasSession={Boolean(sessionData.id)}
+                    onPresetSelect={handlePresetSelect}
+                    onStartPause={handleStartPause}
+                    onReset={handleReset}
+                />
 
-            <section className="mb-2 mt-4">
-                <div className="w-lg mx-auto text-center">
-                    <h2 className="font-bold text-2xl">
+                <section className="glass-panel rounded-2xl p-6 sm:p-8">
+                    <h2 className="text-2xl font-bold text-white">
                         Today's Sessions
                     </h2>
+                    <p className="mt-2 text-sm text-slate-400">Your completed focus work for today.</p>
 
-                    <div className="flex flex-row justify-center space-x-6">
+                    <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                         <MetricCard
-                            icon={<TargetIcon className="w-7 h-7 text-gray-500 dark:text-white mb-3" />}
+                            icon={<TargetIcon className="size-6" />}
                             title="Work Sessions"
                             value={metrics.countWorkSessions}
+                            accent="pink"
                         />
                         <MetricCard
-                            icon={<ClockIcon className="w-7 h-7 text-gray-500 dark:text-white mb-3" />}
+                            icon={<ClockIcon className="size-6" />}
                             title="Total Hours"
                             value={metrics.formattedTotal}
                         />
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
 
             <Toast visible={toast.visible} message={toast.message} />
         </div>

@@ -1,4 +1,5 @@
 import PresetButtons from './PresetButtons.jsx';
+import { LightbulbIcon, PauseIcon, PlayIcon, RotateCcwIcon } from '../Icons.jsx';
 
 export default function TimerCard({
     presets,
@@ -12,8 +13,8 @@ export default function TimerCard({
     onReset,
 }) {
     return (
-        <section>
-            <div className="flex flex-col relative bg-rose-700/90 shadow-lg shadow-red-900 backdrop-blur-sm rounded-xl p-6 border border-white/60 w-xl h-90 mb-2 transition hover:scale-[1.01] hover:shadow-2xl">
+        <section className="h-full">
+            <div className="flex h-full min-h-[470px] flex-col rounded-2xl border border-pink-500/70 bg-[linear-gradient(145deg,rgba(129,8,48,0.95),rgba(74,5,35,0.92))] p-5 shadow-2xl shadow-pink-950/40 sm:p-8">
                 <PresetButtons
                     presets={presets}
                     selectedType={selectedType}
@@ -21,28 +22,40 @@ export default function TimerCard({
                     onSelect={onPresetSelect}
                 />
 
-                <div className="text-center text-white font-bold text-9xl absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    {displayTime}
+                <div className="flex flex-1 flex-col items-center justify-center py-8 text-center">
+                    <div className="font-mono text-6xl font-bold text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] sm:text-8xl lg:text-9xl">
+                        {displayTime}
+                    </div>
+                    <p className="mt-4 text-base font-medium capitalize text-pink-100 sm:text-lg">
+                        {selectedType.replace('_', ' ')} session
+                    </p>
                 </div>
 
-                <div className="flex flex-row justify-between mt-auto">
+                <div className="flex flex-col gap-4 sm:flex-row">
                     <button
-                        className="mx-auto cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-sm text-2xl w-56 text-rose-600 font-semibold bg-white border-solid border-1 border-white/50 tracking-wide transition transform duration-150 ease-out hover:scale-105 active:scale-95 active:shadow-[0_2px_10px_rgba(0,0,0,0.3)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/30 select-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white px-5 py-4 text-lg font-semibold text-pink-700 shadow-xl shadow-black/20 transition hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-50"
                         type="button"
                         disabled={isBusy}
                         onClick={onStartPause}
                     >
+                        {isRunning ? <PauseIcon className="size-5" /> : <PlayIcon className="size-5" />}
                         {isRunning ? 'Pause' : 'Start'}
                     </button>
                     <button
-                        className="self-end cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-sm w-15 bg-white/20 border-solid border-1 border-white/30 text-white/70 hover:text-white tracking-wide transition transform duration-150 ease-out hover:scale-105 active:scale-95 active:shadow-[0_2px_10px_rgba(0,0,0,0.3)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/30 select-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/25 bg-black/10 px-5 py-4 font-medium text-pink-100 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                         type="button"
                         disabled={isBusy || !hasSession}
                         onClick={onReset}
                     >
+                        <RotateCcwIcon className="size-4" />
                         Reset
                     </button>
                 </div>
+
+                <p className="mt-6 flex items-center justify-center gap-2 text-sm text-pink-100/80">
+                    <LightbulbIcon className="size-4" />
+                    Stay focused. You've got this!
+                </p>
             </div>
         </section>
     );

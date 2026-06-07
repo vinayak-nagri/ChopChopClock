@@ -1,15 +1,15 @@
 import { ChevronDownIcon } from '../Icons.jsx';
 
 const labels = {
-    completed: 'Completed Sessions',
-    cancelled: 'Cancelled Sessions',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
 };
 
 export default function StatusDropdown({ selectedStatus, isOpen, onToggle, onSelect }) {
     return (
-        <div className="relative mb-2">
+        <div className="relative">
             <button
-                className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none cursor-pointer hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                className="inline-flex min-w-40 cursor-pointer items-center justify-between rounded-lg border border-slate-600/70 bg-slate-950/50 px-4 py-3 text-sm font-semibold text-white transition hover:border-slate-400 hover:bg-slate-900"
                 type="button"
                 onClick={(event) => {
                     event.stopPropagation();
@@ -17,20 +17,20 @@ export default function StatusDropdown({ selectedStatus, isOpen, onToggle, onSel
                 }}
             >
                 <span>{labels[selectedStatus]}</span>
-                <ChevronDownIcon className="w-2.5 h-2.5 ms-3" />
+                <ChevronDownIcon className="ms-4 size-2.5" />
             </button>
 
             {isOpen && (
                 <div
-                    className="z-10 mt-2 absolute bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
+                    className="glass-panel absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-lg p-1"
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <ul className="pt-1 pb-1/2 text-sm text-gray-700 dark:text-gray-200 mb-2">
+                    <ul className="text-sm text-slate-200">
                         <li>
                             <button
                                 type="button"
                                 onClick={() => onSelect('completed')}
-                                className="block w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                className="block w-full rounded-md px-3 py-2 text-left hover:bg-white/10 hover:text-white"
                             >
                                 Completed Sessions
                             </button>
@@ -39,7 +39,7 @@ export default function StatusDropdown({ selectedStatus, isOpen, onToggle, onSel
                             <button
                                 type="button"
                                 onClick={() => onSelect('cancelled')}
-                                className="block w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                className="block w-full rounded-md px-3 py-2 text-left hover:bg-white/10 hover:text-white"
                             >
                                 Cancelled Sessions
                             </button>
