@@ -1,6 +1,7 @@
-# 🕒 ChopChopClock
+# 🕒 ChopChopClock 
 
-A full-stack **Pomodoro timer web app** built with **Laravel** and **vanilla JavaScript**, designed to help users track focused work sessions, breaks, and long-term productivity streaks.
+A full-stack **Pomodoro timer web app** built with **Laravel**, **React**, and **JavaScript**, designed to help users track focused work sessions, breaks, and long-term productivity streaks.
+(Online Deployment Link: https://chopchopclock.vercel.app)
 
 ---
 
